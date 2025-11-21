@@ -58,7 +58,7 @@ export class Harness {
             runId: config.runId,
             apiKey: config.apiKey,
             runName: config.runName,
-            modelIdName: config.modelIdName,
+            modelIdName: config.modelIdName || undefined,
         };
 
         // Ensure results directory exists
