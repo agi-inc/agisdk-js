@@ -40,7 +40,7 @@ export class Harness {
             taskName: config.taskName,
             taskType: config.taskType,
             taskId: config.taskId,
-            taskVersion: config.taskVersion || 'v2',
+            taskVersion: config.taskVersion || 'v2' as string,
             headless: config.headless ?? true,
             maxSteps: config.maxSteps || 25,
             useHtml: config.useHtml ?? false,
@@ -201,9 +201,7 @@ export class Harness {
         const taskConfig = new TaskConfig(version, name);
 
         // Create task instance
-        const task = new WebCloneTask(taskConfig, {
-            runId: this.config.runId,
-        });
+        const task = new WebCloneTask(taskConfig);
 
         // Create environment
         const envConfig: BrowserEnvConfig = {
