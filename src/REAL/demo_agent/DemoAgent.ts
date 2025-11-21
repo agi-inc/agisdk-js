@@ -32,7 +32,6 @@ export class DemoAgent implements Agent {
     private client: OpenAI | Anthropic;
     private modelName: string;
     private actionHistory: string[] = [];
-    private sessionStartTime: number = 0;
 
     constructor(config: DemoAgentConfig) {
         this.config = {
@@ -127,7 +126,6 @@ export class DemoAgent implements Agent {
                     ? obs.goal_object.find(g => g.type === 'text')?.text || ''
                     : obs.goal || '';
             logger.taskStart(goalStr, this.modelName);
-            this.sessionStartTime = Date.now();
         }
 
         // Build system message
