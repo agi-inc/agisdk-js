@@ -200,11 +200,14 @@ export class Harness {
         const [version, name] = splitTaskReference(taskName);
 
         // Create task instance
-        const task = new WebCloneTask({
+        const taskConfig: any = {
             taskName: name,
             taskVersion: version,
-            runId: this.config.runId,
-        });
+        };
+        if (this.config.runId) {
+            taskConfig.runId = this.config.runId;
+        }
+        const task = new WebCloneTask(taskConfig);
 
         // Create environment
         const envConfig: BrowserEnvConfig = {
