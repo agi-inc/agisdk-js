@@ -1,0 +1,28 @@
+# Files to exclude from npm package
+node_modules/
+example/
+results/
+*.log
+*.tsbuildinfo
+
+# Source files (only dist should be published)
+src/
+tsconfig.json
+
+# Development files
+IMPLEMENTATION.md
+.git/
+.gitignore
+
+# Test files
+*.test.ts
+*.spec.ts
+test.ts
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+

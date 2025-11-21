@@ -1,0 +1,76 @@
+{
+  "name": "@agi-inc/agisdk",
+  "version": "0.1.0",
+  "description": "JavaScript/TypeScript SDK for REAL Benchmark - Build, evaluate, and level up your AI agents for the real web",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc && npm run copy-assets",
+    "copy-assets": "mkdir -p dist/REAL/javascript && cp src/REAL/javascript/*.js dist/REAL/javascript/",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agi-inc/agisdk-js.git"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "benchmark",
+    "browser",
+    "automation",
+    "playwright",
+    "real-bench",
+    "web-agents",
+    "ai-agents"
+  ],
+  "author": {
+    "name": "AGI Inc",
+    "url": "https://www.theagi.company"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/agi-inc/agisdk-js/issues"
+  },
+  "homepage": "https://github.com/agi-inc/agisdk-js#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.2",
+    "glob": "^13.0.0",
+    "playwright": "^1.56.1",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/glob": "^8.1.0",
+    "@types/node": "^24.10.1",
+    "@types/uuid": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "playwright": "^1.56.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": false
+    }
+  }
+}

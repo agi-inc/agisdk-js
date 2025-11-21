@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build project
+        run: npm run build
+      
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not found"
+            exit 1
+          fi
+          if [ ! -f "dist/index.js" ]; then
+            echo "Error: dist/index.js not found"
+            exit 1
+          fi
+          if [ ! -f "dist/REAL/javascript/frame_mark_elements.js" ]; then
+            echo "Error: JavaScript assets not copied"
+            exit 1
+          fi
+          echo "✅ Build output verified"
+          echo "📦 Files in dist:"
+          find dist -type f | wc -l
+      
+      - name: Check for source maps (should be none)
+        run: |
+          MAP_COUNT=$(find dist -name "*.map" 2>/dev/null | wc -l | tr -d ' ')
+          if [ "$MAP_COUNT" -gt 0 ]; then
+            echo "⚠️  Warning: Found $MAP_COUNT source map files (should be 0)"
+            find dist -name "*.map"
+          else
+            echo "✅ No source maps found (as expected)"
+          fi
+      
+      - name: Verify package.json exports
+        run: |
+          node -e "
+            const pkg = require('./package.json');
+            if (!pkg.exports || !pkg.exports['.']) {
+              throw new Error('Missing exports field in package.json');
+            }
+            console.log('✅ Package exports configured correctly');
+          "
+
