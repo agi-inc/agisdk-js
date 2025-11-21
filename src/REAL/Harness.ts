@@ -106,7 +106,7 @@ export class Harness {
         taskId?: number,
         taskVersion?: string
     ): string[] {
-        const version = taskVersion || this.config.taskVersion || 'v2';
+        const version = (taskVersion || this.config.taskVersion || 'v2') as string;
         const allTasks = getAllTasks(version);
 
         let filtered = allTasks;
