@@ -245,12 +245,15 @@ export class DemoAgent implements Agent {
             systemContent = systemMsg;
         }
 
-        const message = await client.messages.create({
+        const createParams: any = {
             model: this.modelName,
             max_tokens: 8000,
-            system: systemContent,
             messages: [{ role: 'user', content }],
-        });
+        };
+        if (systemContent) {
+            createParams.system = systemContent;
+        }
+        const message = await client.messages.create(createParams);
 
         // Extract text content (ignore thinking blocks)
         for (const block of message.content) {
