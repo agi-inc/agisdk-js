@@ -232,7 +232,8 @@ export class Harness {
             let errMsg: string | undefined = undefined;
             let stackTrace: string | undefined = undefined;
 
-            while (!terminated && !truncated && stepCount < this.config.maxSteps) {
+            const maxSteps = this.config.maxSteps || 25;
+            while (!terminated && !truncated && stepCount < maxSteps) {
                 try {
                     // Get action from agent
                     const action = await this.agent.getAction(obs);
