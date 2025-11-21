@@ -21,7 +21,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  * Harness - Main orchestrator class
  */
 export class Harness {
-    private config: Required<HarnessConfig>;
+    private config: HarnessConfig;
     private agent: Agent;
     private resultsDir: string;
 
@@ -40,7 +40,7 @@ export class Harness {
             taskName: config.taskName,
             taskType: config.taskType,
             taskId: config.taskId,
-            taskVersion: (config.taskVersion || 'v2') as string,
+            taskVersion: config.taskVersion || 'v2',
             headless: config.headless ?? true,
             maxSteps: config.maxSteps || 25,
             useHtml: config.useHtml ?? false,
@@ -58,7 +58,7 @@ export class Harness {
             runId: config.runId,
             apiKey: config.apiKey,
             runName: config.runName,
-            modelIdName: config.modelIdName || undefined,
+            modelIdName: config.modelIdName,
         };
 
         // Ensure results directory exists
