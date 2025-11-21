@@ -12,3 +12,4 @@ export * from './demo_agent/DemoAgent.js';
 export * from './browsergym/webclones/TaskConfig.js';
 export * from './browsergym/webclones/WebCloneTask.js';
 export * from './browsergym/webclones/utils.js';
+export * from './browsergym/utils/obs.js';
