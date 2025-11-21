@@ -164,9 +164,10 @@ export class Harness {
     private async runTasks(tasks: string[]): Promise<Record<string, TaskResult>> {
         const results: Record<string, TaskResult> = {};
 
-        if (this.config.numWorkers > 1) {
+        const numWorkers = this.config.numWorkers || 1;
+        if (numWorkers > 1) {
             // Parallel execution using worker threads
-            logger.info(`Using ${this.config.numWorkers} workers for parallel execution`);
+            logger.info(`Using ${numWorkers} workers for parallel execution`);
             const workerResults = await this.runTasksParallel(tasks);
             Object.assign(results, workerResults);
         } else {
