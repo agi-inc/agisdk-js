@@ -215,7 +215,7 @@ export class Harness {
 
         // Create environment
         const envConfig: BrowserEnvConfig = {
-            taskName: taskName,
+            taskName: taskName || '',
             taskVersion: version || 'v2',
             headless: this.config.headless ?? true,
             maxSteps: this.config.maxSteps || 25,
