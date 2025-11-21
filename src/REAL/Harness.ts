@@ -2,20 +2,15 @@
  * Harness - Main orchestrator for running tasks with agents
  */
 
-import { Worker } from 'worker_threads';
-import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs-extra';
-import { v4 as uuidv4 } from 'uuid';
 import type { Agent, TaskResult, HarnessConfig } from './types.js';
 import { BrowserEnv, BrowserEnvConfig } from './browsergym/core/BrowserEnv.js';
 import { WebCloneTask } from './browsergym/webclones/WebCloneTask.js';
-import { TaskConfig, splitTaskReference } from './browsergym/webclones/TaskConfig.js';
+import { splitTaskReference } from './browsergym/webclones/TaskConfig.js';
 import { getAllTasks, getCanonicalTaskId } from './browsergym/webclones/utils.js';
 import { logger } from './logging.js';
 import { DemoAgent, DemoAgentConfig } from './demo_agent/DemoAgent.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * Harness - Main orchestrator class
@@ -34,12 +29,10 @@ export class Harness {
         this.agent = config.agent;
         this.resultsDir = config.resultsDir || './results';
 
-        // Set defaults
+        // Set defaults - use spread operator to preserve optional properties correctly
         this.config = {
-            agent: config.agent,
-            taskName: config.taskName,
-            taskType: config.taskType,
-            taskId: config.taskId,
+            ...config,
+            resultsDir: this.resultsDir,
             taskVersion: config.taskVersion || 'v2',
             headless: config.headless ?? true,
             maxSteps: config.maxSteps || 25,
@@ -48,17 +41,12 @@ export class Harness {
             useScreenshot: config.useScreenshot ?? true,
             browserDimensions: config.browserDimensions || [1280, 720],
             viewport: config.viewport || { width: 1280, height: 720 },
-            resultsDir: this.resultsDir,
             numWorkers: config.numWorkers || 1,
             useCache: config.useCache ?? true,
             cacheOnly: config.cacheOnly ?? false,
             forceRefresh: config.forceRefresh ?? false,
             sampleTasks: config.sampleTasks || 1,
             leaderboard: config.leaderboard ?? false,
-            runId: config.runId,
-            apiKey: config.apiKey,
-            runName: config.runName,
-            modelIdName: config.modelIdName,
         };
 
         // Ensure results directory exists
@@ -215,7 +203,7 @@ export class Harness {
 
         // Create environment
         const envConfig: BrowserEnvConfig = {
-            taskName: taskName || '',
+            taskName: taskName,
             taskVersion: version || 'v2',
             headless: this.config.headless ?? true,
             maxSteps: this.config.maxSteps || 25,
