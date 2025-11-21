@@ -210,12 +210,12 @@ export class Harness {
         const envConfig: BrowserEnvConfig = {
             taskName: taskName,
             taskVersion: version,
-            headless: this.config.headless,
-            maxSteps: this.config.maxSteps,
-            viewport: this.config.viewport,
-            useHtml: this.config.useHtml,
-            useAxtree: this.config.useAxtree,
-            useScreenshot: this.config.useScreenshot,
+            headless: this.config.headless ?? true,
+            maxSteps: this.config.maxSteps || 25,
+            viewport: this.config.viewport || { width: 1280, height: 720 },
+            useHtml: this.config.useHtml ?? false,
+            useAxtree: this.config.useAxtree ?? true,
+            useScreenshot: this.config.useScreenshot ?? true,
         };
 
         const env = new BrowserEnv(envConfig);
