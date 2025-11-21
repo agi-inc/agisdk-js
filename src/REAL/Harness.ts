@@ -106,7 +106,10 @@ export class Harness {
         taskId?: number,
         taskVersion?: string
     ): string[] {
-        const version = (taskVersion || this.config.taskVersion || 'v2') as string;
+        const version = taskVersion || this.config.taskVersion || 'v2';
+        if (!version) {
+            throw new Error('Task version must be specified');
+        }
         const allTasks = getAllTasks(version);
 
         let filtered = allTasks;
@@ -212,7 +215,7 @@ export class Harness {
         // Create environment
         const envConfig: BrowserEnvConfig = {
             taskName: taskName,
-            taskVersion: version,
+            taskVersion: version || 'v2',
             headless: this.config.headless ?? true,
             maxSteps: this.config.maxSteps || 25,
             viewport: this.config.viewport || { width: 1280, height: 720 },
