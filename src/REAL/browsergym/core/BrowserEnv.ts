@@ -91,10 +91,9 @@ export class BrowserEnv {
         // Set default timeout
         this.context.setDefaultTimeout(this._config.timeout);
 
-        // Set test ID attribute to 'bid'
-        await this.context.addInitScript(() => {
-            // This will be set globally via Playwright API
-        });
+        // Set test ID attribute to 'bid' (Playwright API)
+        // Note: This needs to be done via Playwright's selectors API
+        // We'll handle this in the page context
 
         // Setup page tracking
         await this.setupPageTracking();
@@ -102,6 +101,14 @@ export class BrowserEnv {
         // Create new page
         this.page = await this.context.newPage();
         this.pageHistory.set(this.page, null);
+
+        // Expose functions for send_msg_to_user and report_infeasible
+        await this.page.exposeFunction('browsergym_send_message', (text: string) => {
+            this.chatMessages.push({ role: 'assistant', message: text });
+        });
+        await this.page.exposeFunction('browsergym_report_infeasible', (reason: string) => {
+            this.chatMessages.push({ role: 'infeasible', message: reason });
+        });
 
         // Create CDP session
         this.cdpSession = await this.context.newCDPSession(this.page);
@@ -180,7 +187,7 @@ export class BrowserEnv {
 
         const actionExecStart = Date.now();
 
-        // Helper function for action execution
+        // Helper function for reporting infeasible
         const reportInfeasible = (reason: string) => {
             this.chatMessages.push({ role: 'infeasible', message: reason });
         };
