@@ -22,9 +22,17 @@
     "copy-js": "mkdir -p dist/REAL/javascript && cp -r src/REAL/javascript/* dist/REAL/javascript/ 2>/dev/null || true",
     "build": "npm run copy-tasks && tsc && npm run copy-js",
     "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
     "prepublishOnly": "npm run clean && npm run build",
     "prepare": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -54,21 +62,29 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0",
     "fs-extra": "^11.3.2",
     "glob": "^13.0.0",
-    "playwright": "^1.56.1",
-    "uuid": "^13.0.0",
+    "jmespath": "^0.16.0",
     "openai": "^4.0.0",
-    "@anthropic-ai/sdk": "^0.20.0",
-    "jmespath": "^0.16.0"
+    "playwright": "^1.56.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@types/fs-extra": "^11.0.4",
     "@types/glob": "^8.1.0",
     "@types/node": "^24.10.1",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@vitest/ui": "^4.0.13",
+    "eslint": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "prettier": "^3.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.13"
   },
   "peerDependencies": {
     "playwright": "^1.56.0"
