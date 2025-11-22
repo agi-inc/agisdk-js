@@ -1,0 +1,22 @@
+{
+  "name": "agisdk-examples",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Examples for the AGI SDK",
+  "type": "module",
+  "scripts": {
+    "starter": "tsx starter.ts",
+    "custom": "tsx custom.ts",
+    "hackable": "tsx hackable.ts",
+    "leaderboard": "tsx leaderboard.ts",
+    "run-simple": "tsx run_simple.ts"
+  },
+  "dependencies": {
+    "@agi-inc/agisdk": "file:.."
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3"
+  }
+}
