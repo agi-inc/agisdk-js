@@ -7,12 +7,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CURRENT_DIR = path.resolve(__dirname, '../..');
+// From dist/REAL/browsergym/webclones, go up 4 levels to package root
+const PACKAGE_ROOT = path.resolve(__dirname, '../../../../');
 const DEFAULT_VERSION = 'v2';
 
 const VERSION_DIRS: Record<string, string> = {
-    v1: path.join(CURRENT_DIR, 'tasks', 'v1'),
-    v2: path.join(CURRENT_DIR, 'tasks', 'v2'),
+    v1: path.join(PACKAGE_ROOT, 'src', 'REAL', 'tasks', 'v1'),
+    v2: path.join(PACKAGE_ROOT, 'src', 'REAL', 'tasks', 'v2'),
 };
 
 /**
