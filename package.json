@@ -53,6 +53,16 @@
     "name": "AGI Inc",
     "url": "https://www.theagi.company"
   },
+  "contributors": [
+    {
+      "name": "Diego Caples",
+      "email": "diego@theagi.company"
+    },
+    {
+      "name": "Jacob Valdez",
+      "email": "jacob@theagi.company"
+    }
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/agi-inc/agisdk-js/issues"
