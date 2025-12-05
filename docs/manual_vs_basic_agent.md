@@ -47,7 +47,7 @@ The built-in agent that uses LLM APIs to make decisions.
 ### Usage
 
 ```typescript
-import { REAL } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
 
 const agent = new REAL.DemoAgent({
     modelName: 'gpt-4o',
@@ -95,8 +95,8 @@ Implement your own agent for full control over decision-making.
 ### Basic Custom Agent
 
 ```typescript
-import { REAL } from '@agi-inc/agisdk';
-import type { Observation } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
+import type { Observation } from '@theagicompany/agisdk';
 
 class MyCustomAgent implements REAL.Agent {
     private steps: number = 0;

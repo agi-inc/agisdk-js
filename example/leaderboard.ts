@@ -32,7 +32,7 @@
  *     --run-name "my-test-run"
  */
 
-import { REAL } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
 
 // Get configuration from environment or command-line
 const args = process.argv.slice(2);

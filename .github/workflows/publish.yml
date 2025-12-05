@@ -96,8 +96,8 @@ jobs:
       - name: Publish summary
         if: steps.check_version.outputs.exists != 'true'
         run: |
-          echo "✅ Successfully published @agi-inc/agisdk@$(node -p "require('./package.json').version") to npm"
+          echo "✅ Successfully published @theagicompany/agisdk@$(node -p "require('./package.json').version") to npm"
           echo ""
           echo "Install with:"
-          echo "  npm install @agi-inc/agisdk@$(node -p "require('./package.json').version")"
+          echo "  npm install @theagicompany/agisdk@$(node -p "require('./package.json').version")"
 

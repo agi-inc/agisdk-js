@@ -14,7 +14,7 @@
  *   npx tsx example/starter.ts --model gpt-4o --task v2.omnizon-1 --headless false
  */
 
-import { REAL } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
 
 // Parse command-line arguments
 const args = process.argv.slice(2);

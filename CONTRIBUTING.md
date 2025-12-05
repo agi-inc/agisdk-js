@@ -327,7 +327,7 @@ npm run lint:fix
 - **Solution**: Run `npx playwright install --with-deps chromium`
 
 **Issue**: TypeScript errors in examples
-- **Solution**: Examples use `@agi-inc/agisdk` which may not be published yet. For local development, use relative imports or `npm link`.
+- **Solution**: Examples use `@theagicompany/agisdk` which may not be published yet. For local development, use relative imports or `npm link`.
 
 ## Questions?
 

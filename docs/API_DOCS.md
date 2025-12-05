@@ -392,7 +392,7 @@ report_infeasible('reason')            // Report task as infeasible
 ### Observation Preprocessing
 
 ```typescript
-import { flattenAXTreeToStr, flattenDOMToStr, pruneHTML } from '@agi-inc/agisdk';
+import { flattenAXTreeToStr, flattenDOMToStr, pruneHTML } from '@theagicompany/agisdk';
 
 // Flatten accessibility tree to string
 const axtreeStr = flattenAXTreeToStr(obs.axtree_object);
@@ -499,7 +499,7 @@ import type {
     TaskResult,
     HarnessConfig,
     DemoAgentConfig,
-} from '@agi-inc/agisdk';
+} from '@theagicompany/agisdk';
 ```
 
 ---

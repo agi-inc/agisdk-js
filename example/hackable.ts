@@ -29,8 +29,8 @@
  *     --run-id your-run-id
  */
 
-import { REAL } from '@agi-inc/agisdk';
-import type { Observation } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
+import type { Observation } from '@theagicompany/agisdk';
 
 /**
  * Parse command-line arguments

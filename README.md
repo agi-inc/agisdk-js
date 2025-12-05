@@ -1,7 +1,7 @@
 # 🚀 AGI SDK (JavaScript/TypeScript)
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@agi-inc/agisdk"><img src="https://img.shields.io/npm/v/@agi-inc/agisdk?color=blue" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@theagicompany/agisdk"><img src="https://img.shields.io/npm/v/@theagicompany/agisdk?color=blue" alt="npm version"></a>
   <a href="https://github.com/agi-inc/agisdk-js/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
   <a href="https://github.com/agi-inc/agisdk-js/actions"><img src="https://img.shields.io/github/actions/workflow/status/agi-inc/agisdk-js/ci.yml?branch=main" alt="CI Status"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-blue" alt="TypeScript"></a>
@@ -45,7 +45,7 @@ It powers [REAL Bench](https://realevals.ai): a high-fidelity benchmark for AI a
 
 ```bash
 # Install the SDK
-npm install @agi-inc/agisdk
+npm install @theagicompany/agisdk
 
 # Install Playwright browser dependencies
 npx playwright install --force
@@ -61,7 +61,7 @@ export OPENAI_API_KEY="your-api-key"   # or ANTHROPIC_API_KEY, etc.
 ### Using the Built-in Agent
 
 ```typescript
-import { REAL } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
 
 // Set your API key
 process.env.OPENAI_API_KEY = 'your-api-key';
@@ -88,7 +88,7 @@ console.log(results);
 ### Building a Custom Agent
 
 ```typescript
-import { REAL } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
 
 class MyAgent implements REAL.Agent {
     async getAction(obs: REAL.Observation): Promise<string> {

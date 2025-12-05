@@ -13,7 +13,7 @@
  *   npx tsx example/run_simple.ts --model gpt-4o
  */
 
-import { REAL } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
 
 // Parse command-line arguments
 const args = process.argv.slice(2);

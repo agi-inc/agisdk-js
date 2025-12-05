@@ -7,7 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.5] - 2025-12-05
+
 ### Added
+- **WebCloneEvaluator**: Full evaluation system matching Python SDK parity
+  - JMESPath-based evaluation for JSON state verification
+  - LLM-based fuzzy matching evaluation
+  - Python subprocess execution for custom eval scripts
+  - Exact match evaluation
+- **API Integration**: Complete leaderboard submission support
+  - `getRunIdFromApi()` function for obtaining run IDs
+  - `submitToRailway()` function for script-based task submission
+  - Legacy `/submit` endpoint support
+- **Enhanced WebCloneTask**: Full validation and leaderboard submission
+  - Async `init()` method for API-based run_id initialization
+  - Complete `validate()` implementation with evaluation
+  - Script-based and standard leaderboard submission paths
+- **Harness Improvements**: Async initialization for API credentials
 - Comprehensive example directory with starter, custom, hackable, leaderboard, and run_simple examples
 - Complete API documentation (API_DOCS.md, Task.md, manual_vs_basic_agent.md)
 - ESLint configuration for code quality
@@ -15,6 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced CI workflow with linting, type-checking, and format checks
 - CONTRIBUTING.md with contribution guidelines
 - Production-ready project configuration
+
+### Changed
+- Package name standardized to `@theagicompany/agisdk`
+- API endpoint updated to `realevals.ai`
+- Version bumped to 0.3.5 for Python SDK parity
 
 ## [0.1.0] - 2025-01-21
 
@@ -68,6 +89,6 @@ When upgrading between versions, check this changelog for breaking changes and m
 ## Links
 
 - [GitHub Repository](https://github.com/agi-inc/agisdk-js)
-- [npm Package](https://www.npmjs.com/package/@agi-inc/agisdk)
+- [npm Package](https://www.npmjs.com/package/@theagicompany/agisdk)
 - [Documentation](./docs/API_DOCS.md)
 - [REAL Leaderboard](https://www.realevals.ai)

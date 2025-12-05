@@ -12,7 +12,7 @@
     "run-simple": "tsx run_simple.ts"
   },
   "dependencies": {
-    "@agi-inc/agisdk": "file:.."
+    "@theagicompany/agisdk": "file:.."
   },
   "devDependencies": {
     "@types/node": "^24.10.1",

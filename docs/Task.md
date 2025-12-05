@@ -125,7 +125,7 @@ The AGI SDK includes tasks across multiple website clones:
 ### Running a Specific Task
 
 ```typescript
-import { REAL } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
 
 const agent = new REAL.DemoAgent({ modelName: 'gpt-4o' });
 
@@ -197,7 +197,7 @@ Results are returned as a record mapping task names to their outcomes:
 ### List All Available Tasks
 
 ```typescript
-import { getAllTasks } from '@agi-inc/agisdk';
+import { getAllTasks } from '@theagicompany/agisdk';
 
 const allTasks = getAllTasks('v2');
 console.log(allTasks);  // Array of all v2 task names
@@ -206,7 +206,7 @@ console.log(allTasks);  // Array of all v2 task names
 ### Filter Tasks by Type
 
 ```typescript
-import { getTasksByType } from '@agi-inc/agisdk';
+import { getTasksByType } from '@theagicompany/agisdk';
 
 const omnizonTasks = getTasksByType('omnizon', 'v2');
 console.log(omnizonTasks);  // All v2.omnizon-* tasks
@@ -333,7 +333,7 @@ const harness = new REAL.Harness({
 Enable detailed logging:
 
 ```typescript
-import { setLogLevel } from '@agi-inc/agisdk';
+import { setLogLevel } from '@theagicompany/agisdk';
 
 setLogLevel('debug');  // Show all debug information
 

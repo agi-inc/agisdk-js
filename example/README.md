@@ -148,7 +148,7 @@ npx tsx example/run_simple.ts --model gpt-4o
 Most examples use the REAL harness, which accepts various configuration parameters:
 
 ```typescript
-import { REAL } from '@agi-inc/agisdk';
+import { REAL } from '@theagicompany/agisdk';
 
 const harness = new REAL.Harness({
     // Agent configuration
