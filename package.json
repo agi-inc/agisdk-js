@@ -1,4 +1,4 @@
-{
+{ 
   "name": "@theagicompany/agisdk",
   "version": "0.3.6",
   "description": "JavaScript/TypeScript SDK for REAL Benchmark - Build, evaluate, and level up your AI agents for the real web",
