@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.5] - 2025-12-05
+## [0.3.6] - 2025-12-05
 
 ### Added
 - **WebCloneEvaluator**: Full evaluation system matching Python SDK parity
