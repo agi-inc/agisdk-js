@@ -84,6 +84,7 @@
     "@playwright/test": "^1.56.1",
     "@types/fs-extra": "^11.0.4",
     "@types/glob": "^8.1.0",
+    "@types/jmespath": "^0.15.2",
     "@types/node": "^24.10.1",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",

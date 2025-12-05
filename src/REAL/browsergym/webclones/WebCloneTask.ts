@@ -8,6 +8,8 @@ import type { ChatMessage, GoalObject } from '../../types.js';
 import { TaskConfig } from './TaskConfig.js';
 import { splitTaskReference } from './TaskConfig.js';
 import { logger } from '../../logging.js';
+import { WebCloneEvaluator } from './Evaluate.js';
+import { getRunIdFromApi, submitToRailway } from './utils.js';
 
 const DEFAULT_VERSION = 'v2';
 
@@ -35,10 +37,14 @@ export class WebCloneTask extends AbstractBrowserTask {
     protected url: string;
     protected page: Page | null = null;
     protected backgroundPage: Page | null = null;
+    protected evaluator: WebCloneEvaluator;
+    private apiKey: string | undefined;
+    private modelIdName: string | undefined;
+    private runName: string | undefined;
 
     constructor(config: WebCloneTaskConfig) {
         super();
-        
+
         let resolvedName: string;
         let resolvedVersion: string;
 
@@ -61,7 +67,12 @@ export class WebCloneTask extends AbstractBrowserTask {
         this.taskVersion = this.taskConfig.version;
         this.canonicalTaskId = this.taskConfig.canonical_id;
 
-        // Resolve run_id
+        // Store API config for potential run_id generation
+        this.apiKey = config.apiKey;
+        this.modelIdName = config.modelIdName;
+        this.runName = config.runName;
+
+        // Resolve run_id (async init handled separately)
         const envRunId = process.env.RUNID;
         if (envRunId) {
             this.runId = envRunId;
@@ -70,12 +81,14 @@ export class WebCloneTask extends AbstractBrowserTask {
             this.runId = config.runId;
             logger.info(`Using explicitly provided run_id: ${this.runId}`);
         } else {
-            // TODO: Implement API-based run_id generation in Phase 6
-            // For now, use default
-            const taskConfig = this.taskConfig.task.config || {};
-            this.runId = taskConfig.run_id || '0';
+            // Use default for now, async init will update if API key provided
+            const taskConfigData = this.taskConfig.task.config || {};
+            this.runId = taskConfigData.run_id || '0';
             logger.info(`Using run_id from task config or default: ${this.runId}`);
         }
+
+        // Initialize evaluator
+        this.evaluator = new WebCloneEvaluator(this.taskConfig);
 
         // Get goal and URL
         this.goal = this.taskConfig.getGoal();
@@ -94,6 +107,23 @@ export class WebCloneTask extends AbstractBrowserTask {
 
         logger.info(`⚙️ Initialized ${this.canonicalTaskId} task.`);
         logger.info(`🎯 Goal: ${this.goal}`);
+    }
+
+    /**
+     * Initialize async resources like API-based run_id
+     */
+    async init(): Promise<void> {
+        // Try to get run_id from API if we don't have one and credentials are provided
+        if (this.runId === '0' && this.apiKey && this.modelIdName && this.runName) {
+            logger.info(`Attempting to get run_id from API for model '${this.modelIdName}' and run '${this.runName}'`);
+            const apiRunId = await getRunIdFromApi(this.apiKey, this.modelIdName, this.runName);
+            if (apiRunId) {
+                this.runId = apiRunId;
+                // Also set the environment variable for other components
+                process.env.RUNID = apiRunId;
+                logger.info(`Successfully obtained run_id from API: ${this.runId}`);
+            }
+        }
     }
 
     /**
@@ -143,16 +173,137 @@ export class WebCloneTask extends AbstractBrowserTask {
 
     /**
      * Validate if task is complete
-     * 
-     * TODO: Implement full evaluation logic in Phase 7
      */
     async validate(
         _page: Page,
-        _chatMessages: ChatMessage[]
+        chatMessages: ChatMessage[]
     ): Promise<[number, boolean, string, Record<string, any>]> {
-        // Placeholder implementation - will be completed in Phase 7 with Evaluator
-        // For now, return not done
-        return [0.0, false, 'Evaluation not yet implemented', {}];
+        let reward = 0.0;
+        let done = false;
+        let message = '';
+        const info: Record<string, any> = {};
+
+        // Get assistant messages
+        const assistantMessages = chatMessages.filter(m => m.role === 'assistant');
+        const modelResponse = assistantMessages.length > 0
+            ? assistantMessages[assistantMessages.length - 1]!.message
+            : '';
+
+        // Task is done when we have more than one assistant message
+        if (assistantMessages.length > 1) {
+            done = true;
+        }
+
+        logger.info(`Validation called. done=${done}, leaderboard_run=${this.runId}`);
+
+        if (done) {
+            try {
+                // Get environment state from finish endpoint
+                const envStateJson = await this.getFinishJson(1000);
+
+                // Evaluate using local evaluator
+                const [evalReward, , , evalInfo] = await this.evaluator.evaluate(
+                    envStateJson,
+                    modelResponse || 'Done'
+                );
+
+                reward = evalReward;
+                message = done ? 'Task completed!' : 'Task still in progress';
+                info.env_state = envStateJson;
+                info.local_reward = reward;
+                info.eval_info = evalInfo;
+
+                // Handle leaderboard submission
+                const isLeaderboardSubmission = this.runId !== '0';
+                logger.info(`Leaderboard submission? ${isLeaderboardSubmission}`);
+
+                if (isLeaderboardSubmission) {
+                    if (this.evaluator.hasScriptEval()) {
+                        logger.info('Detected script eval; using Railway submission path');
+                        await this.submitScriptLeaderboard(
+                            envStateJson,
+                            modelResponse || 'Done',
+                            info,
+                            reward
+                        );
+                    } else {
+                        logger.info('No script eval; using legacy submit endpoint');
+                        await this.submitStandardLeaderboard(modelResponse || 'Done');
+                    }
+                }
+            } catch (e) {
+                logger.error(`Validation error: ${e instanceof Error ? e.message : String(e)}`);
+                info.error = e instanceof Error ? e.message : String(e);
+            }
+        }
+
+        return [reward, done, message, info];
+    }
+
+    /**
+     * Submit results for script-based tasks to the external evaluation service
+     */
+    private async submitScriptLeaderboard(
+        envStateJson: Record<string, any>,
+        modelResponse: string,
+        info: Record<string, any>,
+        localReward: number
+    ): Promise<void> {
+        logger.info('Preparing Railway submission for script-based task');
+
+        const taskConfigPayload = this.evaluator.buildTaskConfigPayload();
+        const result = await submitToRailway(
+            envStateJson,
+            modelResponse,
+            taskConfigPayload,
+            this.runId,
+            this.canonicalTaskId
+        );
+
+        if (result) {
+            info.railway_reward = result.reward;
+            info.railway_verified = true;
+            info.leaderboard_submitted = result.leaderboardSubmitted;
+
+            if (localReward !== result.reward) {
+                logger.warning(
+                    `⚠️ Evaluation mismatch! Local: ${localReward}, Railway: ${result.reward}`
+                );
+            }
+        } else {
+            info.railway_verified = false;
+            info.leaderboard_submitted = false;
+        }
+    }
+
+    /**
+     * Submit results to the legacy WebClones leaderboard endpoint
+     */
+    private async submitStandardLeaderboard(modelResponse: string): Promise<void> {
+        if (!this.backgroundPage) {
+            logger.warning('Background page not available for leaderboard submission');
+            return;
+        }
+
+        try {
+            logger.info('Submitting result to legacy /submit endpoint');
+            const encodedResponse = encodeURIComponent(modelResponse);
+            const response = await this.backgroundPage.goto(
+                `${this.url}/submit?retrieved_answer=${encodedResponse}`
+            );
+
+            if (!response) {
+                logger.warning('No response received when submitting to leaderboard');
+            } else {
+                const status = response.status();
+                if (status >= 400) {
+                    const statusText = response.statusText();
+                    logger.warning(`Leaderboard submission returned HTTP ${status} (${statusText})`);
+                }
+            }
+        } catch (e) {
+            logger.warning(`Failed to submit response to server: ${e instanceof Error ? e.message : String(e)}`);
+        }
     }
 
     /**

@@ -8,7 +8,7 @@ import type { Agent, TaskResult, HarnessConfig } from './types.js';
 import { BrowserEnv, BrowserEnvConfig } from './browsergym/core/BrowserEnv.js';
 import { WebCloneTask } from './browsergym/webclones/WebCloneTask.js';
 import { splitTaskReference } from './browsergym/webclones/TaskConfig.js';
-import { getAllTasks, getCanonicalTaskId } from './browsergym/webclones/utils.js';
+import { getAllTasks, getCanonicalTaskId, getRunIdFromApi } from './browsergym/webclones/utils.js';
 import { logger } from './logging.js';
 import { DemoAgent, DemoAgentConfig } from './demo_agent/DemoAgent.js';
 
@@ -19,6 +19,7 @@ export class Harness {
     private config: HarnessConfig;
     private agent: Agent;
     private resultsDir: string;
+    private initPromise: Promise<void> | null = null;
 
     constructor(config: HarnessConfig) {
         // Validate config
@@ -51,12 +52,50 @@ export class Harness {
 
         // Ensure results directory exists
         fs.ensureDirSync(this.resultsDir);
+
+        // Start async initialization if API key is provided
+        if (!config.runId && config.apiKey && config.runName && config.modelIdName) {
+            this.initPromise = this.initRunId();
+        }
+    }
+
+    /**
+     * Initialize run_id from API if credentials provided
+     */
+    private async initRunId(): Promise<void> {
+        const { apiKey, modelIdName, runName } = this.config;
+        if (apiKey && modelIdName && runName) {
+            logger.info(`Getting run ID from API using api_key, model_id_name=${modelIdName}, and run_name=${runName}`);
+            const apiRunId = await getRunIdFromApi(apiKey, modelIdName, runName);
+            if (apiRunId) {
+                logger.info(`Retrieved run ID from API: ${apiRunId}`);
+                this.config.runId = apiRunId;
+                this.config.leaderboard = true;
+                // Set environment variable
+                process.env.RUNID = apiRunId;
+            } else {
+                logger.warning('Failed to get run ID from API');
+            }
+        }
+    }
+
+    /**
+     * Ensure initialization is complete
+     */
+    private async ensureInitialized(): Promise<void> {
+        if (this.initPromise) {
+            await this.initPromise;
+            this.initPromise = null;
+        }
     }
 
     /**
      * Run tasks with the configured agent
      */
     async run(tasks?: string[]): Promise<Record<string, TaskResult>> {
+        // Ensure async initialization is complete
+        await this.ensureInitialized();
+
         // Determine which tasks to run
         let tasksToRun: string[] = [];
         if (tasks) {
@@ -191,7 +230,7 @@ export class Harness {
         // Parse task reference
         const [version, name] = splitTaskReference(taskName);
 
-        // Create task instance
+        // Create task instance with API credentials
         const taskConfig: any = {
             taskName: name,
             taskVersion: version,
@@ -199,7 +238,19 @@ export class Harness {
         if (this.config.runId) {
             taskConfig.runId = this.config.runId;
         }
+        if (this.config.apiKey) {
+            taskConfig.apiKey = this.config.apiKey;
+        }
+        if (this.config.modelIdName) {
+            taskConfig.modelIdName = this.config.modelIdName;
+        }
+        if (this.config.runName) {
+            taskConfig.runName = this.config.runName;
+        }
         const task = new WebCloneTask(taskConfig);
+
+        // Initialize async resources
+        await task.init();
 
         // Create environment
         const envConfig: BrowserEnvConfig = {
@@ -381,6 +432,11 @@ export function createHarness(config: {
     openaiApiKey?: string;
     anthropicApiKey?: string;
     openrouterApiKey?: string;
+    apiKey?: string;
+    runName?: string;
+    modelIdName?: string;
+    runId?: string;
+    leaderboard?: boolean;
 }): Harness {
     const agentConfig: DemoAgentConfig = {
         modelName: config.modelName,
@@ -411,6 +467,11 @@ export function createHarness(config: {
         ...(config.cacheOnly !== undefined ? { cacheOnly: config.cacheOnly } : {}),
         ...(config.forceRefresh !== undefined ? { forceRefresh: config.forceRefresh } : {}),
         ...(config.sampleTasks !== undefined ? { sampleTasks: config.sampleTasks } : {}),
+        ...(config.apiKey ? { apiKey: config.apiKey } : {}),
+        ...(config.runName ? { runName: config.runName } : {}),
+        ...(config.modelIdName ? { modelIdName: config.modelIdName } : {}),
+        ...(config.runId ? { runId: config.runId } : {}),
+        ...(config.leaderboard !== undefined ? { leaderboard: config.leaderboard } : {}),
     };
 
     return new Harness(harnessConfig);
